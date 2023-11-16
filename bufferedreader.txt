@@ -1,0 +1,39 @@
+bufferedreader
+버퍼를 이용한 입출력 방식
+scanner 보다 확연히 빠름 scanner의 경우 하드웨어를 통한 방법이라 느림
+bufferedreader 는 무조건 string 으로 받음 -> int로 형변환 필요/ 개행문자만을 경계로 인식(scanner의 경우 띄어쓰기도 인식) 
+예외처리 필요 throws IOException
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+ 
+public class exam01{
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        String str = br.readLine();
+        int a = Integer.parseInt(str); //형변환
+        
+    }
+출처: https://itkjspo56.tistory.com/178 [로춘남의 IT이야기:티스토리]
+
+만약 개행문자가 아니라 공백으로도 구분할 수 있게 하려면 stringtokenizer 혹은 split 으로 가공필요
+
+StringTokenizer st = new StringTokenizer(s); //StringTokenizer인자값에 입력 문자열 넣음
+int a = Integer.parseInt(st.nextToken()); //첫번째 호출
+int b = Integer.parseInt(st.nextToken()); //두번째 호출
+
+String array[] = s.split(" "); //공백마다 데이터 끊어서 배열에 넣음
+
+출력
+
+BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));//선언
+String s = "abcdefg";//출력할 문자열
+bw.write(s);//출력 
+bw.newLine(); //줄바꿈
+bw.flush();//남아있는 데이터를 모두 출력시킴
+bw.close();//스트림을 닫음
+
+BufferedWriter 의 경우 버퍼를 잡아 놓았기 때문에 반드시 flush() / close() 를 반드시 호출해 주어 뒤처리를 해주어야합니다. 그리고 bw.write에는 System.out.println();과 같이 자동개행기능이 없기때문에 개행을 해주어야할 경우에는 \n를 통해 따로 처리해주어야합니다.
+
+bw.write()은 뒤에 개행을 넣어줘야한다 그 이유는 sysout의 경우는 자동으로 개행이 붙는데 write의 경우에는 그런 장치가 없어서 따로 처리가 필요
