@@ -1,3 +1,10 @@
+---
+categories : [Java]
+tags : [generic]
+---
+
+
+
 제네릭(Generic)이란 '데이터 형식에 의존하지 않고, 하나의 값이 여러 다른 데이터 타입을 가질 수 있도록 하는 방법' 입니다.
 
 우리가 흔히 쓰는 ArrayList, LinkedList 등을 생성할 때, 객체 <타입> 객체명 = new 객체 <타입> (); 과 같이 쓰인다.
@@ -207,7 +214,7 @@ class Main {
 
 ### 3. 제네릭 메소드
 
-위 과정까지는 클래스 이름 옆에 예로들어 <E>라는 제네릭 타입을 붙여 해당 클래스 내에서 사용할 수 있는 E 타입으로 일반화를 했다. 그러나 그 외에 별도로 메소드에 한정한 제네릭도 사용할 수 있다.
+위 과정까지는 클래스 이름 옆에 예로들어 <E>라는 제네릭 타입을 붙여 해당 클래스 내에서 사용할 수 있는 E 타입으로 일반화를 했다. 그러나 그 외에 **별도로 메소드에 한정한 제네릭**도 사용할 수 있다.
 
 일반적으로 선언 방법은 다음과 같다.
 
@@ -410,3 +417,208 @@ public class Main {
 
 ## 제한된 Generic 과 와일드 카드
 
+지금까지는 제네릭의 가장 일반적인 예시들을 보여주었다. 제네릭은 참조타입 모두가 될 수 있다. Integer, String, 클래스 등
+
+근데, 만약 특정 범위 내로 좁혀서 제한하고 싶다면 어떻게 해야할까?
+
+이 때 필요한 것이 바로 extends 와 super, 그리고 ?다. ?는 와일드 카드라고 해서 쉽게 말해 '알 수 없는 타입' 이라는 의미이다.
+
+위의 것들을 이용하는 방법으로는 크게 세 가지 방식이 있다. super 키워드와 extends 키워드, 마지막으로 ? 하나만 오는 경우다.
+
+```java
+<K extends T>	// T와 T의 자손 타입만 가능 (K는 들어오는 타입으로 지정 됨)
+<K super T>	// T와 T의 부모(조상) 타입만 가능 (K는 들어오는 타입으로 지정 됨)
+ 
+<? extends T>	// T와 T의 자손 타입만 가능
+<? super T>	// T와 T의 부모(조상) 타입만 가능
+<?>		// 모든 타입 가능. <? extends Object>랑 같은 의미
+```
+
+보통 이해하기 쉽게 다음과 같이 부른다.
+
+extends T : 상한 경계
+
+? super T : 하한 경계
+
+<?> : 와일드 카드
+
+이 때  주의해야 할 게 있다. K extends T 와 ? extends T는 비슷한 구조지만 차이점이 있다.
+
+'유형 경계를 지정'하는 것은 같으나 경계가 지정되고 **K는 특정 타입으로 지정이 되지만, ?는 타입이 지정되지 않는다는 의미다.**
+
+가장 쉬운 예시로 다음이 있다.
+
+```java
+/*
+ * Number와 이를 상속하는 Integer, Short, Double, Long 등의
+ * 타입이 지정될 수 있으며, 객체 혹은 메소드를 호출 할 경우 K는
+ * 지정된 타입으로 변환이 된다.
+ */
+<K extends Number>
+ 
+/*
+ * Number와 이를 상속하는 Integer, Short, Double, Long 등의
+ * 타입이 지정될 수 있으며, 객체 혹은 메소드를 호출 할 경우 지정 되는 타입이 없어
+ * 타입 참조를 할 수는 없다.
+ */
+<? extends T>	// T와 T의 자손 타입만 가능
+```
+
+위와 같은 차이가 있다. 그렇기 때문에 특정 타입의 데이터를 조작하고자 할 경우 K 같이 특정 제네릭 인수로 지정을 해주어야한다.
+
+위 설명을 뒤로하고 extends와 super부터 예시를 들어보자
+
+![](https://blog.kakaocdn.net/dn/bpS4Bp/btqLcTploFp/cTEkLdHVPZW5lnKOvtbS91/img.png)
+
+다음과 같이 서로 다른 클래스들이 상속관계를 갖고 있다고 가정해보자.
+
+1. <K extends T>, <? extends T>
+
+   이 것은 T 타입을 포함한 자식 타입만 가능하다는 의미이다.
+
+   ```java
+   <T extends B>	// B와 C타입만 올 수 있음
+   <T extends E>	// E타입만 올 수 있음
+   <T extends A>	// A, B, C, D, E 타입이 올 수 있음
+    
+   <? extends B>	// B와 C타입만 올 수 있음
+   <? extends E>	// E타입만 올 수 있음
+   <? extends A>	// A, B, C, D, E 타입이 올 수 있음
+   ```
+
+   주석에 썼듯이 **상한 한계**, 즉 extends 뒤에 오는 타입이 최상위 타입으로 한계가 정해지는 것이다.
+
+   대표적인 예로 제네릭 클래스에서 수를 표현하는 클래스만 받고 싶은 경우가 있다. 대표적인 Integer, Long, Byte, Double 등 같은 래퍼 클래스들은 Number 클래스를 상속 받는다.
+
+   즉, Integer, Long 등 수를 표현하는 래퍼 클래스만으로 제한하고 싶은 경우 다음과 같이 쓸 수 있다.
+
+   ```java
+   public class ClassName <K extends Number> {...}
+   ```
+
+   이렇게 특정 타입 및 그 하위 타입만 제한 하고 싶은 경우 쓰면 된다. 좀 더 구체적인 예를 들자면, Integer는 Number 클래스를 상속 받는 클래스라 가능하지만, String은 Number 클래스와는 완전 별개의 클래스이므로 에러를 띄운다.
+
+   ```java
+   public class ClassName <K extends Number> { 
+   	... 
+   }
+    
+   public class Main {
+   	public static void main(String[] args) {
+    
+   		ClassName<Double> a1 = new ClassName<Double>();	// OK!
+    
+   		ClassName<String> a2 = new ClassName<String>();	// error!
+   	}
+   }
+   ```
+
+2. <K super T> , <? super T>
+
+   이 것은 T 타입의 부모 타입만 가능하다는 의미다.
+
+   ```java
+   <K super B>	// B와 A타입만 올 수 있음
+   <K super E>	// E, D, A타입만 올 수 있음
+   <K super A>	// A타입만 올 수 있음
+    
+   <? super B>	// B와 A타입만 올 수 있음
+   <? super E>	// E, D, A타입만 올 수 있음
+   <? super A>	// A타입만 올 수 있음
+   ```
+
+   주석에 썼듯이 **하한한계**. 즉 super 뒤에 오는 타입이 최하위 타입으로 한계가 정해지는 것이다.
+
+   대표적으로 해당 객체가 업캐스팅(Up Casting)이 될 필요가 있을 때 사용한다. 예를 들어 '과일'이라는 클래스가 있고 이 클래스를 각각 상속받는 '사과'클래스와 '딸기'클래스가 있다고 가정해자.
+
+   이 때 각각의 사과와 딸기는 종류가 다르지만, 둘 다 '과일'로 보고 자료를 조작해야 할 수도 있다. (예를 들어 과일 목록을 뽑는다거나 등등)
+
+   그럴 때 '사과'를 '과일'로 캐스팅 해야 하는데, 과일이 상위 타입이므로 '업캐스팅'을 해야한다. 이럴 때 쓸 수 있는 것이 바로 super이다.
+
+   조금 더 현실성 있는 예제라면 제네릭 타입에 대한 객체비교가 있다.
+
+   ```java
+   public class ClassName <E extends Comparable<? super E>> { ... }
+   ```
+
+   이런 문구를 한 번쯤 보셨을 수 있다. 특히 PriorityQueue(우선순위 큐), TreeSet, TreeMap 같이 값을 정렬하는 클래스 만약 여러분이 특정 제네릭에 대한 자기 참조 비교를 하고싶을 경우 대부분 공통적으로 위와 같은 형식을 취한다.
+
+   E extends Comparable 부터 한 번 분석해보자. 
+
+   extends는 앞서 말했듯 extends 뒤에오는 타입이 최상위 타입이 되고, 해당 타입과 그에 대한 하위 타입이라고 했다. 그럼 역으로 생각해보면 이렇다. **E 객체는 반드시 Comparable을 구현해야한다는 의미** 아니겠는가?
+
+   ```java
+   public class SaltClass <E extends Comparable<E>> { ... }
+    
+   public class Student implements Comparable<Student> {
+   	@Override
+   	public int compareTo(Person o) { ... };
+   }
+    
+   public class Main {
+   	public static void main(String[] args) {
+   		SaltClass<Student> a = new SaltClass<Student>();
+   	}
+   }
+   ```
+
+   이렇게만 쓴다면 E extends Comparable<E> 까지만 써도 무방하다.
+
+   즉, SaltClass의 E 는 Student 이 되어야 하는데, Comparable<Student> 의 하위 타입이어야 하므로 거꾸로 말해 Comparable을 구현해야한다는 의미인 것이다.
+
+   그러면 왜 Comparable<E> 가 아닌 <? super E> 일까?
+
+   잠깐 설명했지만, super E는 E를 포함한 상위 타입 객체들이 올 수 있다고 했다.
+
+   만약에 위의 예제에서 학생보다 더 큰 범주의 클래스인 사람(Person)클래스를 둔다면 어떻게 될까? 한마디로 아래와 같다면?
+
+   ```java
+   public class SaltClass <E extends Comparable<E>> { ... }	// Error가능성 있음
+   public class SaltClass <E extends Comparable<? super E>> { ... }	// 안전성이 높음
+    
+   public class Person {...}
+    
+   public class Student extends Person implements Comparable<Person> {
+   	@Override
+   	public int compareTo(Person o) { ... };
+   }
+    
+   public class Main {
+   	public static void main(String[] args) {
+   		SaltClass<Student> a = new SaltClass<Student>();
+   	}
+   }
+   ```
+
+   쉽게 말하면 Person을 상속받고 Comparable 구현부인 comparTo에서 Person 타입으로 업캐스팅(Up-Casting) 한다면 어떻게 될까?
+
+   만약 <E extends Comparable<E>>라면 SaltClass<Student> a 객체가 타입 파라미터로 Student를 주지만, Comparable에서는 그보다 상위 타입인 Person으로 비교하기 때문에 Comparable<E>의 E인 Student보다 상위 타입 객체이기 때문에 제대로 정렬이 안되거나 에러가 날 수 있다
+
+   그렇기 때문에 E 객체의 상위 타입, 즉 <? super E> 을 해줌으로써 위와같은 불상사를 방지할 수가 있는 것이다
+
+   즉, <E extends Comparable<? super E>> 는 쉽게 말하자면 E 타입 또는 E 타입의 슈퍼클래스가 Comparable을 의무적으로 구현해야한다는 뜻으로 슈퍼클래스타입으로 Up Casting이 발생하더라도 안정성을 보장받을 수 있다.
+
+   이 부분은 중요한 것이 이후 필자가 PriorityQueue와 TreeSet 자료구조를 구현할 것인데, 이 부분을 이해하고 있어야 가능하기 때문에 조금은 어렵더라도 미리 언급하고 가려한다.
+
+   <E extends Comparable<? super E>> 에 대해 설명이 조금 길었다. 이 긴 내용을 한 마디로 정의하자면 이렇다.
+
+   *"E 자기 자신 및 조상 타입과 비교할 수 있는 E"*
+
+3. <?> (와일드 카드)
+
+   마지막으로 와일드 카드다. 
+
+   이 와일드 카드 <?> 은 <? extends Object> 와 마찬가지라고 했다. Object는 자바에서의 모든 API 및 사용자 클래스의 최상위 타입이다. 한마디로 다음과 같은 의미나 마찬가지다.
+
+   ```java
+   public class ClassName { ... }
+   public class ClassName extends Object { ... } 
+   ```
+
+   우리가 public class ClassName extends Object {} 를 묵시적으로 상속받는 것이나 다름이 없다.
+
+   한마디로 <?>은 무엇이냐. 어떤 타입이든 상관 없다는 의미다. 당신이 String을 받던 어떤 타입을 리턴 받던 알빠 아니라는 조금 과격한 얘기..
+
+   이는 보통 데이터가 아닌 '기능'의 사용에만 관심이 있는 경우에 <?>로 사용할 수 있다.
+
+참고) [제네릭](https://st-lab.tistory.com/153)
